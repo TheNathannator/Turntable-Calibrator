@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using Nefarius.Utilities.DeviceManagement.PnP;
@@ -91,6 +91,7 @@ namespace TurntableCalibrator
                         file.WriteLine("\"Calibration\"=-");
                         file.Flush();
                         Console.WriteLine($"Wrote calibration data to {fileName}");
+                        Console.WriteLine("Double-click this file to apply the custom calibration values.");
                     }
 
                     fileName = $"360table_calibration_reset_{idString}.reg";
@@ -116,6 +117,7 @@ namespace TurntableCalibrator
                         file.WriteLine("\"Calibration\"=-");
                         file.Flush();
                         Console.WriteLine($"Wrote calibration reset data to {fileName}");
+                        Console.WriteLine("Double-click this file to reset the calibration to defaults.");
                     }
                 }
             }
