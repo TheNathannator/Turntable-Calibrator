@@ -15,7 +15,8 @@ namespace TurntableCalibrator
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
-            for (int instance = 0;
+            int instance;
+            for (instance = 0;
                 Devcon.FindByInterfaceGuid(DeviceInterfaceIds.HidDevice, out string path, out string instanceId, instance);
                 instance++
             )
@@ -118,6 +119,9 @@ namespace TurntableCalibrator
                     }
                 }
             }
+
+            if (instance == 0)
+                Console.WriteLine("No devices found!");
 
             Console.WriteLine("Press Enter to exit...");
             while (Console.ReadKey(intercept: true).Key != ConsoleKey.Enter) { }
