@@ -15,8 +15,8 @@ namespace TurntableCalibrator
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
-            int instance;
-            for (instance = 0;
+            bool devicesFound = false;
+            for (int instance = 0;
                 Devcon.FindByInterfaceGuid(DeviceInterfaceIds.HidDevice, out string path, out string instanceId, instance);
                 instance++
             )
@@ -24,6 +24,7 @@ namespace TurntableCalibrator
                 // Xbox 360 controllers have this in their device path
                 if (path.Contains("IG_"))
                 {
+                    devicesFound = true;
                     Console.WriteLine($"Found Xbox 360 HID device: {path}");
 
                     // Retrieve VID/PID and subtype
@@ -122,8 +123,8 @@ namespace TurntableCalibrator
                 }
             }
 
-            if (instance == 0)
-                Console.WriteLine("No devices found!");
+            if (!devicesFound)
+                Console.WriteLine("No Xbox 360 devices found!");
 
             Console.WriteLine("Press Enter to exit...");
             while (Console.ReadKey(intercept: true).Key != ConsoleKey.Enter) { }
