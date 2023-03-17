@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using Nefarius.Utilities.DeviceManagement.PnP;
@@ -11,7 +11,10 @@ namespace TurntableCalibrator
         const string pidString = "PID_";
         const string subtypeString = "SUB_";
 
+        const byte unknownSubtype = 0x00;
         const byte turntableSubtype = 0x17;
+        const ushort wiredTurntableVid = 0x1430;
+        const ushort wiredTurntablePid = 0x1715;
 
         static void Main()
         {
@@ -59,16 +62,38 @@ namespace TurntableCalibrator
                         }
                     }
 
-                    Console.WriteLine($"Vendor ID: 0x{vendorId:X4}, product ID: 0x{productId:X4}, subtype: 0x{subType:X2}");
-
-                    // Only calibrate turntables
-                    if (subType != turntableSubtype)
+                    Console.WriteLine($"Vendor ID: 0x{vendorId:X4}");
+                    Console.WriteLine($"Product ID: 0x{productId:X4}");
+                    if (subType != unknownSubtype)
                     {
-                        Console.WriteLine($"Device is not a turntable! Skipping.");
-                        continue;
+                        Console.WriteLine($"Subtype: 0x{subType:X2}");
+                        // Only calibrate turntables
+                        if (subType != turntableSubtype)
+                        {
+                            Console.WriteLine($"Device is not a turntable! Skipping.");
+                            continue;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Device is a turntable.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Couldn't determine subtype! Falling back to vendor/product IDs.");
+                        if (vendorId == wiredTurntableVid && productId == wiredTurntablePid)
+                        {
+                            Console.WriteLine("Matched with wired turntable vendor/product IDs.");
+                            Console.WriteLine("Device is a wired turntable.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Vendor/product IDs are unrecognized! Skipping device.");
+                            continue;
+                        }
                     }
 
-                    Console.WriteLine($"Device is a turntable, writing calibration file...");
+                    Console.WriteLine($"Writing calibration file...");
 
                     var idString = $"VID_{vendorId:X4}&PID_{productId:X4}";
                     var fileName = $"360table_calibration_install_{idString}.reg";
