@@ -11,6 +11,8 @@ namespace TurntableCalibrator
         const string pidString = "PID_";
         const string subtypeString = "SUB_";
 
+        const byte turntableSubtype = 0x17;
+
         static void Main()
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
@@ -60,7 +62,7 @@ namespace TurntableCalibrator
                     Console.WriteLine($"Vendor ID: 0x{vendorId:X4}, product ID: 0x{productId:X4}, subtype: 0x{subType:X2}");
 
                     // Only calibrate turntables
-                    if (subType != 0x17)
+                    if (subType != turntableSubtype)
                     {
                         Console.WriteLine($"Device is not a turntable! Skipping.");
                         continue;
