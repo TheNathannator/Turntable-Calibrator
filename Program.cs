@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.IO;
 using Nefarius.Utilities.DeviceManagement.PnP;
@@ -69,7 +69,7 @@ namespace TurntableCalibrator
                     Console.WriteLine($"Device is a turntable, writing calibration file...");
 
                     var idString = $"VID_{vendorId:X4}&PID_{productId:X4}";
-                    var fileName = $"360table_calibration_{idString}.reg";
+                    var fileName = $"360table_calibration_install_{idString}.reg";
                     using (var file = File.CreateText(fileName))
                     {
                         file.WriteLine("Windows Registry Editor Version 5.00");
