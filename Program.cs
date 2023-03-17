@@ -71,6 +71,7 @@ namespace TurntableCalibrator
                         if (subType != turntableSubtype)
                         {
                             Console.WriteLine($"Device is not a turntable! Skipping.");
+                            Console.WriteLine();
                             continue;
                         }
                         else
@@ -89,6 +90,7 @@ namespace TurntableCalibrator
                         else
                         {
                             Console.WriteLine("Vendor/product IDs are unrecognized! Skipping device.");
+                            Console.WriteLine();
                             continue;
                         }
                     }
@@ -147,6 +149,8 @@ namespace TurntableCalibrator
                         Console.WriteLine($"Wrote calibration reset data to {fileName}");
                         Console.WriteLine("Double-click this file to reset the calibration to defaults.");
                     }
+
+                    Console.WriteLine();
                 }
             }
 
