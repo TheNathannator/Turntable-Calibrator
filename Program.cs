@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -15,7 +15,7 @@ const ushort wiredTurntablePid = 0x1715;
 
 AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
-var devices = new HashSet<string>();
+var devices = new Dictionary<string, int>();
 
 for (int instance = 0;
     Devcon.FindByInterfaceGuid(DeviceInterfaceIds.HidDevice, out string path, out string instanceId, instance);
@@ -92,7 +92,9 @@ for (int instance = 0;
     }
 
     var idString = $"VID_{vendorId:X4}&PID_{productId:X4}";
-    devices.Add(idString);
+    if (!devices.TryGetValue(idString, out int count))
+        count = 0;
+    devices[idString] = ++count;
 
     Console.WriteLine();
 }
@@ -110,28 +112,31 @@ else
     {
         file.WriteLine("Windows Registry Editor Version 5.00");
 
-        foreach (string idString in devices)
+        foreach (var (idString, count) in devices)
         {
-            file.WriteLine($"""
+            for (int i = 0; i < count; i++)
+            {
+                file.WriteLine($"""
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes]
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes]
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\0]
-                "Calibration"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes\0]
+                    "Calibration"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\1]
-                "Calibration"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes\1]
+                    "Calibration"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\2]
-                "Calibration"=-
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes\2]
+                    "Calibration"=-
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\3]
-                "Calibration"=-
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes\3]
+                    "Calibration"=-
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\4]
-                "Calibration"=-
-                """
-            );
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes\4]
+                    "Calibration"=-
+                    """
+                );
+            }
         }
 
         file.Flush();
@@ -142,28 +147,31 @@ else
     {
         file.WriteLine("Windows Registry Editor Version 5.00");
 
-        foreach (string idString in devices)
+        foreach (var (idString, count) in devices)
         {
-            file.WriteLine($"""
+            for (int i = 0; i < count; i++)
+            {
+                file.WriteLine($"""
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes]
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes]
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\0]
-                "Calibration"=-
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes\0]
+                    "Calibration"=-
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\1]
-                "Calibration"=-
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes\1]
+                    "Calibration"=-
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\2]
-                "Calibration"=-
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes\2]
+                    "Calibration"=-
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\3]
-                "Calibration"=-
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes\3]
+                    "Calibration"=-
 
-                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\4]
-                "Calibration"=-
-                """
-            );
+                    [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\{i}\Type\Axes\4]
+                    "Calibration"=-
+                    """
+                );
+            }
         }
 
         file.Flush();
