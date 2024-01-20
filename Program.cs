@@ -97,23 +97,27 @@ for (int instance = 0;
     using (var file = File.CreateText(fileName))
     {
         file.WriteLine("Windows Registry Editor Version 5.00");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes]");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\0]");
-        file.WriteLine("\"Calibration\"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\1]");
-        file.WriteLine("\"Calibration\"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\2]");
-        file.WriteLine("\"Calibration\"=-");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\3]");
-        file.WriteLine("\"Calibration\"=-");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\4]");
-        file.WriteLine("\"Calibration\"=-");
+
+        file.WriteLine($"""
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes]
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\0]
+        "Calibration"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\1]
+        "Calibration"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\2]
+        "Calibration"=-
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\3]
+        "Calibration"=-
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\4]
+        "Calibration"=-
+        """);
+
         file.Flush();
         Console.WriteLine($"Wrote calibration data to {fileName}");
         Console.WriteLine("Double-click this file to apply the custom calibration values.");
@@ -123,23 +127,27 @@ for (int instance = 0;
     using (var file = File.CreateText(fileName))
     {
         file.WriteLine("Windows Registry Editor Version 5.00");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes]");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\0]");
-        file.WriteLine("\"Calibration\"=-");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\1]");
-        file.WriteLine("\"Calibration\"=-");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\2]");
-        file.WriteLine("\"Calibration\"=-");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\3]");
-        file.WriteLine("\"Calibration\"=-");
-        file.WriteLine();
-        file.WriteLine($@"[HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\4]");
-        file.WriteLine("\"Calibration\"=-");
+
+        file.WriteLine($"""
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes]
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\0]
+        "Calibration"=-
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\1]
+        "Calibration"=-
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\2]
+        "Calibration"=-
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\3]
+        "Calibration"=-
+
+        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\4]
+        "Calibration"=-
+        """);
+
         file.Flush();
         Console.WriteLine($"Wrote calibration reset data to {fileName}");
         Console.WriteLine("Double-click this file to reset the calibration to defaults.");
