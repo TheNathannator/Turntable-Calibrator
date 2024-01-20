@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Nefarius.Utilities.DeviceManagement.PnP;
@@ -14,7 +15,8 @@ const ushort wiredTurntablePid = 0x1715;
 
 AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
-bool devicesFound = false;
+var devices = new HashSet<string>();
+
 for (int instance = 0;
     Devcon.FindByInterfaceGuid(DeviceInterfaceIds.HidDevice, out string path, out string instanceId, instance);
     instance++
@@ -24,7 +26,6 @@ for (int instance = 0;
     if (!path.Contains("IG_"))
         continue;
 
-    devicesFound = true;
     Console.WriteLine($"Found Xbox 360 HID device: {path}");
 
     // Retrieve VID/PID and subtype
@@ -90,74 +91,88 @@ for (int instance = 0;
         }
     }
 
-    Console.WriteLine($"Writing calibration file...");
-
     var idString = $"VID_{vendorId:X4}&PID_{productId:X4}";
-    var fileName = $"360table_calibration_install_{idString}.reg";
-    using (var file = File.CreateText(fileName))
-    {
-        file.WriteLine("Windows Registry Editor Version 5.00");
-
-        file.WriteLine($"""
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes]
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\0]
-        "Calibration"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\1]
-        "Calibration"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\2]
-        "Calibration"=-
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\3]
-        "Calibration"=-
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\4]
-        "Calibration"=-
-        """);
-
-        file.Flush();
-        Console.WriteLine($"Wrote calibration data to {fileName}");
-        Console.WriteLine("Double-click this file to apply the custom calibration values.");
-    }
-
-    fileName = $"360table_calibration_reset_{idString}.reg";
-    using (var file = File.CreateText(fileName))
-    {
-        file.WriteLine("Windows Registry Editor Version 5.00");
-
-        file.WriteLine($"""
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes]
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\0]
-        "Calibration"=-
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\1]
-        "Calibration"=-
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\2]
-        "Calibration"=-
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\3]
-        "Calibration"=-
-
-        [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\4]
-        "Calibration"=-
-        """);
-
-        file.Flush();
-        Console.WriteLine($"Wrote calibration reset data to {fileName}");
-        Console.WriteLine("Double-click this file to reset the calibration to defaults.");
-    }
+    devices.Add(idString);
 
     Console.WriteLine();
 }
 
-if (!devicesFound)
+if (devices.Count < 1)
+{
     Console.WriteLine("No Xbox 360 devices found!");
+}
+else
+{
+    Console.WriteLine($"Writing calibration files...");
+
+    const string applyFilename = "360table_calibration_apply.reg";
+    using (var file = File.CreateText(applyFilename))
+    {
+        file.WriteLine("Windows Registry Editor Version 5.00");
+
+        foreach (string idString in devices)
+        {
+            file.WriteLine($"""
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes]
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\0]
+                "Calibration"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\1]
+                "Calibration"=hex:80,7f,00,00,ff,7f,00,00,7f,80,00,00
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\2]
+                "Calibration"=-
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\3]
+                "Calibration"=-
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\4]
+                "Calibration"=-
+                """
+            );
+        }
+
+        file.Flush();
+    }
+
+    const string resetFilename = "360table_calibration_reset.reg";
+    using (var file = File.CreateText(resetFilename))
+    {
+        file.WriteLine("Windows Registry Editor Version 5.00");
+
+        foreach (string idString in devices)
+        {
+            file.WriteLine($"""
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes]
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\0]
+                "Calibration"=-
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\1]
+                "Calibration"=-
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\2]
+                "Calibration"=-
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\3]
+                "Calibration"=-
+
+                [HKEY_CURRENT_USER\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{idString}\Calibration\0\Type\Axes\4]
+                "Calibration"=-
+                """
+            );
+        }
+
+        file.Flush();
+    }
+
+    Console.WriteLine($"Wrote calibration files.");
+    Console.WriteLine($"Double-click {applyFilename} to apply the custom calibration values.");
+    Console.WriteLine($"Double-click {resetFilename} to reset the calibration to defaults.");
+}
 
 Console.WriteLine("Press Enter to exit...");
 while (Console.ReadKey(intercept: true).Key != ConsoleKey.Enter) { }
