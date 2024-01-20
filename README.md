@@ -11,11 +11,12 @@ However, since third-party Xbox 360 receivers change the product ID that turntab
 ## Usage
 
 1. Download the application from the [Releases page](../../releases). No dependencies are required, they're bundled into the application.
-2. Connect at least one turntable to your Xbox 360 receiver. Since all connected turntables will show up with the same VID/PID, they will all receive the calibration.
-3. Run the application. It will generate two registry files: one to apply the calibrations, and one to remove them.
-4. Double-click the `360table_calibration_VID_xxxx&PID_xxxx.reg` file to apply the calibrations.
-5. Set up your controls in the emulator or game.
-6. To remove the calibrations, double-click the `360table_calibration_reset_VID_xxxx&PID_xxxx.reg` file.
+2. Connect all the turntables you wish to use and run the application. It will generate two registry files:
+   - `360table_calibration_apply.reg`, which applies the calibration.
+   - `360table_calibration_reset.reg`, which removes the calibration.
+3. Double-click the `360table_calibration_apply.reg` file to apply the calibrations.
+4. Set up your controls in the emulator or game.
+5. To remove the calibrations, double-click the `360table_calibration_reset.reg` file.
 
 ## A Note/Warning
 
