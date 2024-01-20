@@ -15,6 +15,10 @@ const ushort wiredTurntablePid = 0x1715;
 
 AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
+Console.WriteLine("Connect your turntable(s), then press Enter to begin.");
+while (Console.ReadKey(intercept: true).Key != ConsoleKey.Enter) { }
+Console.WriteLine();
+
 var devices = new Dictionary<string, int>();
 
 for (int instance = 0;
@@ -58,37 +62,30 @@ for (int instance = 0;
         }
     }
 
-    Console.WriteLine($"Vendor ID: 0x{vendorId:X4}");
-    Console.WriteLine($"Product ID: 0x{productId:X4}");
+    // Determine whether or not it is a turntable
     if (subType != unknownSubtype)
     {
-        Console.WriteLine($"Subtype: 0x{subType:X2}");
-        // Only calibrate turntables
+        Console.WriteLine($"Device IDs: 0x{vendorId:X4}:0x{productId:X4}, subtype: 0x{subType:X2}");
         if (subType != turntableSubtype)
         {
             Console.WriteLine($"Device is not a turntable! Skipping.");
             Console.WriteLine();
             continue;
         }
-        else
-        {
-            Console.WriteLine($"Device is a turntable.");
-        }
+
+        Console.WriteLine("Found a turntable via XInput subtype.");
     }
     else
     {
-        Console.WriteLine("Couldn't determine subtype! Falling back to vendor/product IDs.");
-        if (vendorId == wiredTurntableVid && productId == wiredTurntablePid)
+        Console.WriteLine($"Device IDs: 0x{vendorId:X4}:0x{productId:X4}");
+        if (vendorId != wiredTurntableVid || productId != wiredTurntablePid)
         {
-            Console.WriteLine("Matched with wired turntable vendor/product IDs.");
-            Console.WriteLine("Device is a wired turntable.");
-        }
-        else
-        {
-            Console.WriteLine("Vendor/product IDs are unrecognized! Skipping device.");
+            Console.WriteLine($"Device is not a turntable! Skipping.");
             Console.WriteLine();
             continue;
         }
+
+        Console.WriteLine("Found a turntable via vendor/product IDs.");
     }
 
     var idString = $"VID_{vendorId:X4}&PID_{productId:X4}";
